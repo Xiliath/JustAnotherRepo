@@ -36,7 +36,7 @@ jobs:
       - name: Build and push CronJob image
         run: |
           docker build -t ghcr.io/xiliath/myawesomeapp.cronjob:latest -f MyAwesomeApp.CronJob/Dockerfile .
-          docker push ghcr.io/xiliath}/myawesomeapp.cronjob:latest
+          docker push ghcr.io/xiliath/myawesomeapp.cronjob:latest
 
       - name: Update Umbrella Chart Versions
         run: |
