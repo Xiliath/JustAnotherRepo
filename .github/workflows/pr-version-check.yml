@@ -1,0 +1,51 @@
+name: PR Version Check
+
+on: [pull_request]
+
+jobs:
+  version-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Verify MyAwesomeApp.WebApi Versions and Ensure Change from Main
+        run: |
+          WEBAPI_CSPROJ_VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" MyAwesomeApp.WebApi/MyAwesomeApp.WebApi.csproj)
+          echo "PR MyAwesomeApp.WebApi csproj version: $WEBAPI_CSPROJ_VERSION"
+          WEBAPI_CHART_VERSION=$(grep -oPm1 "(?<=version: )[0-9a-zA-Z\.\-]+" charts/mywebapi-chart/Chart.yaml)
+          WEBAPI_CHART_APPVERSION=$(grep -oPm1 "(?<=appVersion: )[0-9a-zA-Z\.\-]+" charts/mywebapi-chart/Chart.yaml)
+          echo "PR MyAwesomeApp.WebApi chart version: $WEBAPI_CHART_VERSION"
+          echo "PR MyAwesomeApp.WebApi chart appVersion: $WEBAPI_CHART_APPVERSION"
+          if [ "$WEBAPI_CSPROJ_VERSION" != "$WEBAPI_CHART_VERSION" ] || [ "$WEBAPI_CSPROJ_VERSION" != "$WEBAPI_CHART_APPVERSION" ]; then
+            echo "Error: MyAwesomeApp.WebApi version mismatch: csproj ($WEBAPI_CSPROJ_VERSION) vs chart ($WEBAPI_CHART_VERSION / $WEBAPI_CHART_APPVERSION)"
+            exit 1
+          fi
+          git fetch origin main
+          MAIN_WEBAPI_VERSION=$(git show origin/main:MyAwesomeApp.WebApi/MyAwesomeApp.WebApi.csproj | grep -oPm1 "(?<=<Version>)[^<]+")
+          echo "Main branch MyAwesomeApp.WebApi version: $MAIN_WEBAPI_VERSION"
+          if [ "$WEBAPI_CSPROJ_VERSION" == "$MAIN_WEBAPI_VERSION" ]; then
+            echo "Error: MyAwesomeApp.WebApi version in PR ($WEBAPI_CSPROJ_VERSION) has not changed from main ($MAIN_WEBAPI_VERSION)."
+            exit 1
+          fi
+
+      - name: Verify MyAwesomeApp.CronJob Versions and Ensure Change from Main
+        run: |
+          CRONJOB_CSPROJ_VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" MyAwesomeApp.CronJob/MyAwesomeApp.CronJob.csproj)
+          echo "PR MyAwesomeApp.CronJob csproj version: $CRONJOB_CSPROJ_VERSION"
+          CRONJOB_CHART_VERSION=$(grep -oPm1 "(?<=version: )[0-9a-zA-Z\.\-]+" charts/mycronjob-chart/Chart.yaml)
+          CRONJOB_CHART_APPVERSION=$(grep -oPm1 "(?<=appVersion: )[0-9a-zA-Z\.\-]+" charts/mycronjob-chart/Chart.yaml)
+          echo "PR MyAwesomeApp.CronJob chart version: $CRONJOB_CHART_VERSION"
+          echo "PR MyAwesomeApp.CronJob chart appVersion: $CRONJOB_CHART_APPVERSION"
+          if [ "$CRONJOB_CSPROJ_VERSION" != "$CRONJOB_CHART_VERSION" ] || [ "$CRONJOB_CSPROJ_VERSION" != "$CRONJOB_CHART_APPVERSION" ]; then
+            echo "Error: MyAwesomeApp.CronJob version mismatch: csproj ($CRONJOB_CSPROJ_VERSION) vs chart ($CRONJOB_CHART_VERSION / $CRONJOB_CHART_APPVERSION)"
+            exit 1
+          fi
+          git fetch origin main
+          MAIN_CRONJOB_VERSION=$(git show origin/main:MyAwesomeApp.CronJob/MyAwesomeApp.CronJob.csproj | grep -oPm1 "(?<=<Version>)[^<]+")
+          echo "Main branch MyAwesomeApp.CronJob version: $MAIN_CRONJOB_VERSION"
+          if [ "$CRONJOB_CSPROJ_VERSION" == "$MAIN_CRONJOB_VERSION" ]; then
+            echo "Error: MyAwesomeApp.CronJob version in PR ($CRONJOB_CSPROJ_VERSION) has not changed from main ($MAIN_CRONJOB_VERSION)."
+            exit 1
+          fi
+          echo "Version check passed for both MyAwesomeApp.WebApi and MyAwesomeApp.CronJob charts."

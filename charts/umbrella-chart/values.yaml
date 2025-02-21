@@ -1,0 +1,15 @@
+nginx:
+  enabled: true
+  service:
+    type: LoadBalancer
+    port: 80
+
+certificates:
+  enabled: true
+  commonName: myapp.example.com
+
+sharedConfig:
+  setting: "shared-value"
+
+sharedSecret:
+  password: "shared-secret"

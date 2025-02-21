@@ -1,0 +1,10 @@
+image:
+  repository: ghcr.io/xiliath/MyAwesomeApp.webapi
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+privateConfig:
+  setting: "private-webapi-value"
+
+privateSecret:
+  password: "webapi-secret"

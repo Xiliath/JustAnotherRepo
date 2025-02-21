@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: { include "mywebapi.fullname" . }
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: { include "mywebapi.name" . }
+  template:
+    metadata:
+      labels:
+        app: { include "mywebapi.name" . }
+    spec:
+      containers:
+      - name: webapi
+        image: "{ .Values.image.repository }:{ .Values.image.tag }"
+        imagePullPolicy: { .Values.image.pullPolicy }
+        ports:
+        - containerPort: 80

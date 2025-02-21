@@ -1,0 +1,4 @@
+charts:
+  - umbrella-chart
+  - mywebapi-chart
+  - mycronjob-chart
