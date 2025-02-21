@@ -38,25 +38,6 @@ jobs:
           docker build -t ghcr.io/${{ github.actor }}/myawesomeapp.cronjob:latest -f MyAwesomeApp.CronJob/Dockerfile .
           docker push ghcr.io/${{ github.actor }}/myawesomeapp.cronjob:latest
 
-      - name: Update Umbrella Chart Versions
-        run: |
-          # Extract versions from the csproj files
-          WEBAPI_VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" MyAwesomeApp.WebApi/MyAwesomeApp.WebApi.csproj)
-          CRONJOB_VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" MyAwesomeApp.CronJob/MyAwesomeApp.CronJob.csproj)
-          echo "WebApi version: $WEBAPI_VERSION"
-          echo "CronJob version: $CRONJOB_VERSION"
-          # Compose a new umbrella version (for example, based on the WebApi version and the run number)
-          NEW_UMBRELLA_VERSION="${WEBAPI_VERSION}-${GITHUB_RUN_NUMBER}"
-          echo "New umbrella chart version: $NEW_UMBRELLA_VERSION"
-          # Update the umbrella chart's version and appVersion in charts/umbrella-chart/Chart.yaml
-          sed -i "s/^version:.*/version: $NEW_UMBRELLA_VERSION/" charts/umbrella-chart/Chart.yaml
-          sed -i "s/^appVersion:.*/appVersion: $NEW_UMBRELLA_VERSION/" charts/umbrella-chart/Chart.yaml
-          # Update dependency versions for mywebapi and mycronjob subcharts
-          sed -i "/- name: mywebapi/{n;s/version: .*/    version: $WEBAPI_VERSION/}" charts/umbrella-chart/Chart.yaml
-          sed -i "/- name: mycronjob/{n;s/version: .*/    version: $CRONJOB_VERSION/}" charts/umbrella-chart/Chart.yaml
-          echo "Updated umbrella chart:"
-          cat charts/umbrella-chart/Chart.yaml
-
       - name: Release Helm Charts with Chart Releaser
         uses: helm/chart-releaser-action@v1.7.0
         with:
@@ -70,6 +51,6 @@ jobs:
 
       - name: Deploy Umbrella Chart with Helm
         run: |
-          helm repo add myrepo https://${{ github.actor }}.github.io/${{ github.event.repository.name | tolower }}/
+          helm repo add myrepo https://${{ github.actor }}.github.io/${{ toLower(github.event.repository.name) }}/
           helm repo update
           helm upgrade --install myawesomeapp myrepo/myawesomeapp --atomic --timeout 300s
