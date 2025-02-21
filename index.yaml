@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  mywebapi:
+  - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2025-02-21T01:06:44.184203646Z"
+    description: Helm chart for MyAwesomeApp.WebApi
+    digest: 80b1698c761a4698d7fab4ea9c4af637e2d9d232d0a6c410134fdd6508b562ef
+    name: mywebapi
+    type: application
+    urls:
+    - https://github.com/Xiliath/JustAnotherRepo/releases/download/mywebapi-1.0.1/mywebapi-1.0.1.tgz
+    version: 1.0.1
+generated: "2025-02-21T01:06:44.184214446Z"
