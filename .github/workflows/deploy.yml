@@ -67,9 +67,3 @@ jobs:
           CR_OWNER: ${{ github.repository_owner }}
           CR_REPO: ${{ github.event.repository.name }}
           CR_FORCE: "true"
-
-      - name: Deploy Umbrella Chart with Helm
-        run: |
-          helm repo add myrepo https://${{ github.actor }}.github.io/${{ github.event.repository.name | tolower }}/
-          helm repo update
-          helm upgrade --install myawesomeapp myrepo/myawesomeapp --atomic --timeout 300s
